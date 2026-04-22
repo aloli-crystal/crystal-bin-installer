@@ -3,6 +3,16 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.1 — 2026-04-22
+
+* Quand un projet déclare une seule cible, le binaire installé prend
+  désormais le nom du projet (répertoire) plutôt que celui de la cible.
+  Cela évite que des noms de cibles génériques polluent `~/bin` et
+  masquent d'autres outils sur le `$PATH` (par exemple `crystal-deploy`
+  s'installait auparavant sous le nom `deploy`).
+* Les projets avec plusieurs cibles conservent le comportement
+  précédent : chaque binaire est installé sous son propre nom de cible.
+
 == v0.1.0 — 2026-04-22
 
 Première version publique.

@@ -3,6 +3,15 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.1 — 2026-04-22
+
+* When a project declares exactly one target, the installed binary now
+  takes the project (directory) name instead of the target name. This
+  avoids generic target names leaking into `~/bin` and shadowing other
+  tools on `$PATH` (e.g. `crystal-deploy` used to install as `deploy`).
+* Projects with multiple targets keep the previous behaviour: each
+  binary is installed under its own target name.
+
 == v0.1.0 — 2026-04-22
 
 First public release.

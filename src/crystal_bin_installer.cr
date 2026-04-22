@@ -71,8 +71,14 @@ module CrystalBinInstaller
           next
         end
 
+        # When a project declares exactly one target, install the binary
+        # under the project (directory) name rather than the target name.
+        # This avoids generic names leaking into `~/bin` (e.g. a project
+        # `crystal-deploy` whose target is `deploy` would otherwise install
+        # as `deploy`, shadowing other tools on `$PATH`).
         targets.each do |target|
-          results << process_target(name, project_path, target)
+          installed_name = targets.size == 1 ? name : target
+          results << process_target(name, project_path, target, installed_name)
         end
       end
 
@@ -124,13 +130,19 @@ module CrystalBinInstaller
       stdout.to_s
     end
 
-    private def process_target(project : String, project_path : String, target : String) : Result
+    private def process_target(
+      project : String,
+      project_path : String,
+      target : String,
+      installed_name : String,
+    ) : Result
       header = "▶ #{project} → #{target}"
+      header += " (installé sous le nom #{installed_name})" if installed_name != target
       puts header.colorize.cyan.bold
 
       if dry_run
         puts "  [dry-run] shards build #{release ? "--release " : ""}#{target}"
-        puts "  [dry-run] copie dans #{File.join(dest_dir, target)}"
+        puts "  [dry-run] copie dans #{File.join(dest_dir, installed_name)}"
         return Result.new(project, target, Status::Installed, "dry-run")
       end
 
@@ -153,7 +165,7 @@ module CrystalBinInstaller
         return Result.new(project, target, Status::Failed, "binaire introuvable : bin/#{target}")
       end
 
-      binary_dst = File.join(dest_dir, target)
+      binary_dst = File.join(dest_dir, installed_name)
       FileUtils.cp(binary_src, binary_dst)
       File.chmod(binary_dst, 0o755)
 
