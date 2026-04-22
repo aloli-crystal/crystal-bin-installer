@@ -6,7 +6,7 @@ require "colorize"
 # against `origin/production`, compiles every declared target, and copies
 # the resulting binaries into a destination directory (default `~/bin`).
 module CrystalBinInstaller
-  VERSION = "0.1.0"
+  VERSION = "0.1.1"
 
   # Status of a single target processed by the installer.
   enum Status
