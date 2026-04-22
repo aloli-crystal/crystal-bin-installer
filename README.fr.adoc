@@ -1,0 +1,126 @@
+= crystal-bin-installer
+:source-language: crystal
+:toc: left
+:toc-title: Table des matières
+:toclevels: 2
+
+image:https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml/badge.svg[CI,link=https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml]
+
+English version: link:README.adoc[README.adoc]
+
+Compilation et installation en une commande de tout un écosystème de
+shards Crystal d'un dossier local.
+
+`crystal-bin-installer` parcourt un répertoire source, détecte chaque
+projet Crystal déclarant une section `targets:` dans son `shard.yml`,
+vérifie qu'il est bien synchronisé avec `origin/production`, le compile
+et copie le binaire produit dans un répertoire de destination (par
+défaut `~/bin`) pour le rendre immédiatement disponible via le `$PATH`
+du shell.
+
+== Pourquoi
+
+Quand on entretient une dizaine de shards Crystal, taper
+`shards build --release` dans chacun puis copier les binaires à la main
+dans `~/bin` est fastidieux. Cet outil le fait en une seule commande,
+et refuse d'installer un binaire qui ne refléterait pas ce qui est sur
+GitHub.
+
+== Fonctionnalités
+
+* **Auto-découverte** — tout sous-répertoire direct contenant un
+  `shard.yml` est inspecté.
+* **Détection des binaires** — les projets sans section `targets:`
+  (bibliothèques pures) sont silencieusement ignorés.
+* **Vérification de synchronisation git** — avant la compilation,
+  chaque dépôt doit être sur la branche `production`, avoir un arbre
+  de travail propre et être à jour avec `origin/production`.
+* **Mode release par défaut** — utilise `shards build --release`.
+  Passez `--dev` pour une compilation plus rapide non optimisée.
+* **Dry-run** — `--dry-run` affiche ce qui serait fait sans toucher
+  au disque.
+* **Récapitulatif coloré** — un rapport final liste les projets
+  installés, en échec et exclus, avec la raison de chaque échec.
+
+== Installation
+
+[source,shell]
+----
+git clone git@github.com:aloli-crystal/crystal-bin-installer.git
+cd crystal-bin-installer
+shards build --release
+cp bin/crystal-bin-installer ~/bin/
+----
+
+== Utilisation
+
+[source,shell]
+----
+# Par défaut : parcourt ~/prod-crystal, installe dans ~/bin, mode release, fetch activé.
+crystal-bin-installer
+
+# Simulation à partir d'un autre dossier.
+crystal-bin-installer --dir ~/work/crystal --dry-run
+
+# Exclure deux projets et compiler en mode dev.
+crystal-bin-installer --dev --skip crystal-asciidoctor,crystal-experimental
+
+# Ignorer les vérifications git (compile même les dépôts sales).
+crystal-bin-installer --force
+
+# Ne pas récupérer les références distantes (plus rapide mais état potentiellement obsolète).
+crystal-bin-installer --no-fetch
+----
+
+== Options
+
+[cols="1,3"]
+|===
+| Option | Description
+
+| `--dir CHEMIN`
+| Répertoire source à parcourir (par défaut : `~/prod-crystal`).
+
+| `--dest CHEMIN`
+| Répertoire de destination des binaires (par défaut : `~/bin`).
+
+| `--dev`
+| Compile en mode développement au lieu de `--release`.
+
+| `--skip NOMS`
+| Liste de projets à exclure, séparés par des virgules.
+
+| `--dry-run`
+| Affiche ce qui serait fait sans rien écrire.
+
+| `--no-fetch`
+| N'exécute pas `git fetch` avant la vérification de synchronisation.
+
+| `--force`
+| Ignore entièrement les vérifications git.
+
+| `-v`, `--version`
+| Affiche la version et quitte.
+
+| `-h`, `--help`
+| Affiche l'aide et quitte.
+|===
+
+== Codes de sortie
+
+* `0` — toutes les cibles détectées ont été installées avec succès.
+* `1` — au moins une cible a échoué (erreur de compilation, dépôt
+  désynchronisé, `shard.yml` invalide, etc.).
+
+== Développement
+
+[source,shell]
+----
+shards install
+crystal spec
+bin/ameba
+----
+
+== Licence
+
+MIT — voir link:LICENSE[LICENSE].

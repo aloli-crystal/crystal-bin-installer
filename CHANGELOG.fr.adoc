@@ -1,0 +1,22 @@
+= Journal des modifications
+:toc: left
+:toc-title: Versions
+:toclevels: 2
+
+== v0.1.0 — 2026-04-22
+
+Première version publique.
+
+* Parcourt un répertoire source (par défaut `~/prod-crystal`) et détecte
+  chaque projet Crystal déclarant une section `targets:` dans son
+  `shard.yml`.
+* Vérifie la synchronisation git face à `origin/production` : branche
+  courante, arbre de travail propre, distant à jour.
+* Lance `shards install --production` puis `shards build` (avec
+  `--release` sauf si `--dev` est passé).
+* Copie le binaire produit dans le répertoire de destination (par défaut
+  `~/bin`).
+* Options CLI : `--dir`, `--dest`, `--dev`, `--skip`, `--dry-run`,
+  `--no-fetch`, `--force`, `-v`, `-h`.
+* Affiche un récapitulatif coloré en fin d'exécution (installés / échecs
+  / exclus).

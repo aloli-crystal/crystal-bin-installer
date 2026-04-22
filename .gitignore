@@ -1,0 +1,6 @@
+/bin/*
+!/bin/crystal-bin-installer.cr
+/lib/
+/.shards/
+*.dwarf
+.DS_Store

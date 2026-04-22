@@ -1,0 +1,19 @@
+= Changelog
+:toc: left
+:toc-title: Versions
+:toclevels: 2
+
+== v0.1.0 — 2026-04-22
+
+First public release.
+
+* Walks a source directory (default `~/prod-crystal`) and detects every
+  Crystal project declaring a `targets:` section in its `shard.yml`.
+* Checks git synchronisation against `origin/production`: current branch,
+  clean working tree, remote in sync.
+* Runs `shards install --production` and `shards build` (with `--release`
+  unless `--dev` is passed).
+* Copies the produced binary to the destination directory (default `~/bin`).
+* CLI options: `--dir`, `--dest`, `--dev`, `--skip`, `--dry-run`,
+  `--no-fetch`, `--force`, `-v`, `-h`.
+* Prints a coloured summary at the end (installed / failed / skipped).

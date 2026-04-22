@@ -1,0 +1,124 @@
+= crystal-bin-installer
+:source-language: crystal
+:toc: left
+:toc-title: Table of contents
+:toclevels: 2
+
+image:https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml/badge.svg[CI,link=https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml]
+
+French version: link:README.fr.adoc[README.fr.adoc]
+
+One-command build and install for the whole Crystal shard ecosystem in a
+local directory.
+
+`crystal-bin-installer` walks a source directory, finds every Crystal
+project that declares a `targets:` section in its `shard.yml`, verifies
+that it is synchronised with `origin/production`, compiles it, and
+copies the produced binary into a destination directory (by default
+`~/bin`), making it instantly available on the shell `$PATH`.
+
+== Why
+
+When you maintain a dozen Crystal shards, typing `shards build --release`
+in each one and copying the binaries to `~/bin` by hand is tedious. This
+tool does it in a single command, and refuses to install a binary that
+does not reflect what is on GitHub.
+
+== Features
+
+* **Auto-discovery** — every direct subdirectory with a `shard.yml` is
+  inspected.
+* **Binary detection** — projects without a `targets:` section (pure
+  libraries) are silently skipped.
+* **Git sync check** — before compiling, each repository must be on the
+  `production` branch, have a clean working tree, and be up to date
+  with `origin/production`.
+* **Release by default** — uses `shards build --release`. Pass `--dev`
+  for a faster, unoptimised build.
+* **Dry-run** — `--dry-run` prints what would be done without touching
+  the disk.
+* **Coloured summary** — a final report lists installed, failed, and
+  skipped projects with the reason for each failure.
+
+== Installation
+
+[source,shell]
+----
+git clone git@github.com:aloli-crystal/crystal-bin-installer.git
+cd crystal-bin-installer
+shards build --release
+cp bin/crystal-bin-installer ~/bin/
+----
+
+== Usage
+
+[source,shell]
+----
+# Default: walk ~/prod-crystal, install into ~/bin, release build, fetch enabled.
+crystal-bin-installer
+
+# Dry run from a custom directory.
+crystal-bin-installer --dir ~/work/crystal --dry-run
+
+# Skip two projects and compile in dev mode.
+crystal-bin-installer --dev --skip crystal-asciidoctor,crystal-experimental
+
+# Bypass git checks (builds dirty repos too).
+crystal-bin-installer --force
+
+# Do not fetch from the remote (faster, uses cached remote state).
+crystal-bin-installer --no-fetch
+----
+
+== Options
+
+[cols="1,3"]
+|===
+| Option | Description
+
+| `--dir PATH`
+| Source directory to walk (default: `~/prod-crystal`).
+
+| `--dest PATH`
+| Destination directory for the binaries (default: `~/bin`).
+
+| `--dev`
+| Compile in development mode instead of `--release`.
+
+| `--skip NAMES`
+| Comma-separated list of project directory names to skip.
+
+| `--dry-run`
+| Report what would be done without writing anything.
+
+| `--no-fetch`
+| Do not run `git fetch` before the sync check.
+
+| `--force`
+| Skip git sync checks entirely.
+
+| `-v`, `--version`
+| Print the version and exit.
+
+| `-h`, `--help`
+| Print help and exit.
+|===
+
+== Exit codes
+
+* `0` — every discovered target was installed successfully.
+* `1` — at least one target failed (compilation error, desynchronised
+  repo, invalid `shard.yml`, …).
+
+== Development
+
+[source,shell]
+----
+shards install
+crystal spec
+bin/ameba
+----
+
+== License
+
+MIT — see link:LICENSE[LICENSE].

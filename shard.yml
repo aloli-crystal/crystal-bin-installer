@@ -1,0 +1,25 @@
+name: crystal-bin-installer
+version: 0.1.0
+
+description: |
+  Builds and installs compilable Crystal projects from a local directory
+  into `~/bin`. Walks the source directory, detects every project with a
+  `targets:` section in its `shard.yml`, checks git sync with the
+  `production` branch, runs `shards build` and copies the binary into
+  the destination directory.
+
+authors:
+  - Philippe Nénert <philippe@aloli.fr>
+
+crystal: ">= 1.19.0"
+
+license: MIT
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: "~> 1.6"
+
+targets:
+  crystal-bin-installer:
+    main: src/cli.cr
