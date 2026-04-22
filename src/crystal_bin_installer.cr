@@ -6,7 +6,58 @@ require "colorize"
 # against `origin/production`, compiles every declared target, and copies
 # the resulting binaries into a destination directory (default `~/bin`).
 module CrystalBinInstaller
-  VERSION = "0.1.1"
+  VERSION = "0.1.2"
+
+  # Default path of the user-level config file (loaded automatically by
+  # the CLI unless `--config` is passed).
+  DEFAULT_CONFIG_PATH = File.join(Path.home.to_s, ".crystal-bin-installer.yml")
+
+  # Persistent per-user defaults read from a YAML file. Fields are
+  # optional: unset entries fall back to the built-in defaults, and CLI
+  # flags override everything.
+  class Config
+    getter dir : String?
+    getter dest : String?
+    getter release : Bool?
+    getter skip : Array(String)
+    getter fetch : Bool?
+    getter force : Bool?
+
+    def initialize(
+      @dir : String? = nil,
+      @dest : String? = nil,
+      @release : Bool? = nil,
+      @skip : Array(String) = [] of String,
+      @fetch : Bool? = nil,
+      @force : Bool? = nil,
+    )
+    end
+
+    # Loads a `Config` from `path`. Returns an empty `Config` when the
+    # file does not exist or cannot be parsed.
+    def self.load(path : String) : Config
+      return new unless File.exists?(path)
+
+      yaml = YAML.parse(File.read(path))
+      return new unless yaml.raw.is_a?(Hash(YAML::Any, YAML::Any))
+
+      skip = [] of String
+      if (s = yaml["skip"]?) && s.raw.is_a?(Array(YAML::Any))
+        skip = s.as_a.map(&.as_s)
+      end
+
+      new(
+        dir: yaml["dir"]?.try(&.as_s?),
+        dest: yaml["dest"]?.try(&.as_s?),
+        release: yaml["release"]?.try(&.as_bool?),
+        skip: skip,
+        fetch: yaml["fetch"]?.try(&.as_bool?),
+        force: yaml["force"]?.try(&.as_bool?),
+      )
+    rescue YAML::ParseException
+      new
+    end
+  end
 
   # Status of a single target processed by the installer.
   enum Status

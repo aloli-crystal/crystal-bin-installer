@@ -3,6 +3,18 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.2 — 2026-04-22
+
+* Add a persistent per-user config file, loaded by default from
+  `~/.crystal-bin-installer.yml`. Supported keys: `dir`, `dest`,
+  `release`, `fetch`, `force`, `skip` (list). The path can be
+  overridden with `--config PATH`.
+* Precedence is now: built-in defaults < config file < CLI flags.
+  `--skip` is additive with the config file (union of both lists);
+  all other options override.
+* The CLI help banner documents the config file location and the
+  list of supported keys.
+
 == v0.1.1 — 2026-04-22
 
 * When a project declares exactly one target, the installed binary now

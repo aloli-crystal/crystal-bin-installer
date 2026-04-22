@@ -3,6 +3,19 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.2 — 2026-04-22
+
+* Ajout d'un fichier de configuration persistant au niveau utilisateur,
+  chargé par défaut depuis `~/.crystal-bin-installer.yml`. Clés
+  supportées : `dir`, `dest`, `release`, `fetch`, `force`, `skip`
+  (liste). Le chemin peut être surchargé avec `--config CHEMIN`.
+* Ordre de précédence désormais : valeurs par défaut < fichier de
+  configuration < options en ligne de commande. `--skip` est additif
+  avec le fichier de configuration (union des deux listes) ; toutes
+  les autres options surchargent.
+* La bannière d'aide du CLI documente l'emplacement du fichier de
+  configuration et la liste des clés supportées.
+
 == v0.1.1 — 2026-04-22
 
 * Quand un projet déclare une seule cible, le binaire installé prend

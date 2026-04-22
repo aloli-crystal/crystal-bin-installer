@@ -78,6 +78,10 @@ crystal-bin-installer --no-fetch
 |===
 | Option | Description
 
+| `--config CHEMIN`
+| Chemin du fichier de configuration utilisateur (par défaut :
+  `~/.crystal-bin-installer.yml`).
+
 | `--dir CHEMIN`
 | Répertoire source à parcourir (par défaut : `~/prod-crystal`).
 
@@ -88,7 +92,9 @@ crystal-bin-installer --no-fetch
 | Compile en mode développement au lieu de `--release`.
 
 | `--skip NOMS`
-| Liste de projets à exclure, séparés par des virgules.
+| Liste de projets à exclure, séparés par des virgules. Additif avec le
+  fichier de configuration (les deux listes sont fusionnées, pas
+  remplacées).
 
 | `--dry-run`
 | Affiche ce qui serait fait sans rien écrire.
@@ -104,6 +110,51 @@ crystal-bin-installer --no-fetch
 
 | `-h`, `--help`
 | Affiche l'aide et quitte.
+|===
+
+== Fichier de configuration
+
+Un fichier de configuration utilisateur est automatiquement chargé
+depuis `~/.crystal-bin-installer.yml` s'il existe, pour éviter de
+passer les mêmes options à chaque lancement. Le chemin peut être
+surchargé avec `--config CHEMIN`.
+
+Ordre de précédence (du plus faible au plus fort) : **valeurs par
+défaut → fichier de configuration → options en ligne de commande**.
+`--skip` est la seule option additive : la liste du fichier de
+configuration et celle du CLI sont fusionnées.
+
+.Exemple `~/.crystal-bin-installer.yml`
+[source,yaml]
+----
+# Surcharge des valeurs par défaut : répertoire source personnalisé,
+# compilation en mode dev, exclusion de projets dont les binaires ne
+# doivent pas atterrir dans ~/bin.
+dir: ~/prod-crystal
+dest: ~/bin
+release: true
+fetch: true
+force: false
+skip:
+  - crystal-beryl
+  - crystal-asciidoctor
+  - crystal-silex
+  - crystal-load-env
+  - crystal-i18n
+----
+
+Clés supportées :
+
+[cols="1,3"]
+|===
+| Clé | Type / description
+
+| `dir` | Chaîne — répertoire source (équivalent de `--dir`).
+| `dest` | Chaîne — répertoire de destination (équivalent de `--dest`).
+| `release` | Booléen — compiler en mode release (par défaut : `true`).
+| `fetch` | Booléen — exécuter `git fetch` avant la vérification (par défaut : `true`).
+| `force` | Booléen — ignorer les vérifications git (par défaut : `false`).
+| `skip` | Liste de chaînes — projets à exclure.
 |===
 
 == Codes de sortie

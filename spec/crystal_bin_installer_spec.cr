@@ -66,3 +66,53 @@ describe CrystalBinInstaller::Installer do
     end
   end
 end
+
+describe CrystalBinInstaller::Config do
+  describe ".load" do
+    it "returns an empty config when the file does not exist" do
+      config = CrystalBinInstaller::Config.load("/nonexistent/path.yml")
+      config.dir.should be_nil
+      config.dest.should be_nil
+      config.release.should be_nil
+      config.skip.should be_empty
+    end
+
+    it "parses all supported keys" do
+      yaml = <<-YAML
+        dir: /tmp/src
+        dest: /tmp/bin
+        release: false
+        fetch: false
+        force: true
+        skip:
+          - alpha
+          - beta
+        YAML
+
+      tmp = File.tempname("cbi-config", ".yml")
+      File.write(tmp, yaml)
+      begin
+        config = CrystalBinInstaller::Config.load(tmp)
+        config.dir.should eq("/tmp/src")
+        config.dest.should eq("/tmp/bin")
+        config.release.should eq(false)
+        config.fetch.should eq(false)
+        config.force.should eq(true)
+        config.skip.should eq(%w[alpha beta])
+      ensure
+        File.delete(tmp) if File.exists?(tmp)
+      end
+    end
+
+    it "returns an empty config on malformed YAML" do
+      tmp = File.tempname("cbi-config-bad", ".yml")
+      File.write(tmp, "not: valid: yaml: at: all:")
+      begin
+        config = CrystalBinInstaller::Config.load(tmp)
+        config.skip.should be_empty
+      ensure
+        File.delete(tmp) if File.exists?(tmp)
+      end
+    end
+  end
+end
