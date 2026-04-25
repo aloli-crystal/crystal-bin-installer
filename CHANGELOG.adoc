@@ -3,6 +3,30 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.3 — 2026-04-25
+
+Symlink install mode. New `-l` / `--link` CLI flag (and matching
+`link: true` config key) installs each binary as a symlink to
+`bin/<target>` inside the source project, instead of copying the
+file. Any subsequent `shards build` inside a project is then
+immediately reflected in `~/bin` without re-running the installer
+— very convenient when iterating on a tool you also use daily.
+
+* Symlink target is always an absolute path, so the link survives
+  a relative `--dest` or a later move of `~/bin`.
+* The destination is wiped and re-created on every run, so a
+  switch between `--link` and the default copy mode is idempotent
+  (no leftover broken symlinks, no stale copies).
+* `--no-link` is provided as a counterpart to override
+  `link: true` from the config file.
+* The success line of each install reads `lié : <path>` instead
+  of `installé : <path>` when the symlink mode is active, to make
+  the choice explicit in the run log.
+* 4 new unit tests covering: config key parsing (`link: true`),
+  symlink creation pointing at the source, copy mode preserved
+  when `link: false`, and idempotent replacement of an existing
+  destination. **11 unit tests, all green.**
+
 == v0.1.2 — 2026-04-22
 
 * Add a persistent per-user config file, loaded by default from

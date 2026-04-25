@@ -6,7 +6,7 @@ require "colorize"
 # against `origin/production`, compiles every declared target, and copies
 # the resulting binaries into a destination directory (default `~/bin`).
 module CrystalBinInstaller
-  VERSION = "0.1.2"
+  VERSION = "0.1.3"
 
   # Default path of the user-level config file (loaded automatically by
   # the CLI unless `--config` is passed).
@@ -22,6 +22,7 @@ module CrystalBinInstaller
     getter skip : Array(String)
     getter fetch : Bool?
     getter force : Bool?
+    getter link : Bool?
 
     def initialize(
       @dir : String? = nil,
@@ -30,6 +31,7 @@ module CrystalBinInstaller
       @skip : Array(String) = [] of String,
       @fetch : Bool? = nil,
       @force : Bool? = nil,
+      @link : Bool? = nil,
     )
     end
 
@@ -53,6 +55,7 @@ module CrystalBinInstaller
         skip: skip,
         fetch: yaml["fetch"]?.try(&.as_bool?),
         force: yaml["force"]?.try(&.as_bool?),
+        link: yaml["link"]?.try(&.as_bool?),
       )
     rescue YAML::ParseException
       new
@@ -81,6 +84,12 @@ module CrystalBinInstaller
     getter dry_run : Bool
     getter fetch : Bool
     getter force : Bool
+    # When `true`, install each binary as a symlink pointing back to
+    # the project's `bin/<target>` instead of copying the file. Useful
+    # in development: any subsequent `shards build` inside a project
+    # is immediately reflected in `~/bin` without re-running this
+    # installer.
+    getter link : Bool
 
     def initialize(
       @source_dir : String,
@@ -90,6 +99,7 @@ module CrystalBinInstaller
       @dry_run : Bool = false,
       @fetch : Bool = true,
       @force : Bool = false,
+      @link : Bool = false,
     )
     end
 
@@ -193,7 +203,8 @@ module CrystalBinInstaller
 
       if dry_run
         puts "  [dry-run] shards build #{release ? "--release " : ""}#{target}"
-        puts "  [dry-run] copie dans #{File.join(dest_dir, installed_name)}"
+        action = link ? "lien symbolique" : "copie"
+        puts "  [dry-run] #{action} dans #{File.join(dest_dir, installed_name)}"
         return Result.new(project, target, Status::Installed, "dry-run")
       end
 
@@ -217,11 +228,49 @@ module CrystalBinInstaller
       end
 
       binary_dst = File.join(dest_dir, installed_name)
-      FileUtils.cp(binary_src, binary_dst)
-      File.chmod(binary_dst, 0o755)
+      install_binary(binary_src, binary_dst)
 
-      puts "  installé : #{binary_dst}".colorize.green
+      verb = link ? "lié" : "installé"
+      puts "  #{verb} : #{binary_dst}".colorize.green
       Result.new(project, target, Status::Installed, binary_dst)
+    end
+
+    # Installs `binary_src` as `binary_dst`. With `link: false` the
+    # source file is copied (the historical behaviour); with `link:
+    # true` a symlink is created instead, pointing at the absolute
+    # source path so it stays valid regardless of where `dest_dir`
+    # is mounted.
+    #
+    # Any pre-existing entry at `binary_dst` (regular file, broken
+    # symlink, working symlink) is removed first so the operation is
+    # idempotent across runs and across switches between `--link` and
+    # the default copy mode.
+    #
+    # Public so specs can drive the install step in isolation without
+    # having to spin up a real `shards build` invocation.
+    def install_binary(binary_src : String, binary_dst : String) : Nil
+      # `File.symlink?` does not raise on a missing path, but `File.exists?`
+      # follows symlinks — combine both so we also catch a broken symlink
+      # left over from a previous run.
+      if File.symlink?(binary_dst) || File.exists?(binary_dst)
+        File.delete(binary_dst)
+      end
+
+      if link
+        # Always pass an absolute path so the link doesn't break when
+        # `dest_dir` is a relative path or when the user later moves
+        # `~/bin` somewhere else.
+        File.symlink(File.expand_path(binary_src), binary_dst)
+      else
+        FileUtils.cp(binary_src, binary_dst)
+        File.chmod(binary_dst, 0o755)
+      end
+    end
+
+    # Alias for `install_binary` used in tests to make the intent
+    # obvious in a `describe "Installer · link mode"` block.
+    def send_install(binary_src : String, binary_dst : String) : Nil
+      install_binary(binary_src, binary_dst)
     end
 
     private def build_error(project : String, target : String, step : String) : Result

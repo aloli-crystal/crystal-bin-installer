@@ -3,6 +3,35 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.3 — 2026-04-25
+
+Mode d'installation par lien symbolique. Nouveau drapeau CLI
+`-l` / `--link` (et clé de configuration équivalente `link: true`)
+qui installe chaque binaire comme un lien symbolique vers
+`bin/<cible>` dans le projet source, au lieu d'en copier le
+fichier. Tout `shards build` ultérieur dans un projet est alors
+immédiatement reflété dans `~/bin` sans avoir à relancer
+l'installeur — très pratique en itération sur un outil que vous
+utilisez aussi quotidiennement.
+
+* La cible du lien est toujours un chemin absolu, pour que le lien
+  survive à un `--dest` relatif ou à un futur déplacement de `~/bin`.
+* La destination est nettoyée et recréée à chaque exécution, pour
+  qu'un basculement entre `--link` et le mode copie par défaut soit
+  idempotent (pas de liens cassés laissés derrière, pas de copies
+  périmées).
+* `--no-link` est fourni comme contrepartie pour forcer le mode
+  copie depuis la ligne de commande même si `link: true` figure
+  dans le fichier de configuration.
+* La ligne de succès de chaque installation affiche `lié : <chemin>`
+  au lieu de `installé : <chemin>` lorsque le mode lien est actif,
+  pour rendre le choix explicite dans le journal d'exécution.
+* 4 nouveaux tests unitaires couvrant : le parsing de la clé de
+  configuration (`link: true`), la création du lien pointant sur
+  la source, le mode copie préservé quand `link: false`, et le
+  remplacement idempotent d'une destination existante. **11 tests
+  unitaires, tous verts.**
+
 == v0.1.2 — 2026-04-22
 
 * Ajout d'un fichier de configuration persistant au niveau utilisateur,

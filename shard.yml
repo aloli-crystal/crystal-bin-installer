@@ -1,5 +1,5 @@
 name: crystal-bin-installer
-version: 0.1.2
+version: 0.1.3
 
 description: |
   Builds and installs compilable Crystal projects from a local directory

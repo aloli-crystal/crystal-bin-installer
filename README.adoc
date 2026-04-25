@@ -68,6 +68,10 @@ crystal-bin-installer --force
 
 # Do not fetch from the remote (faster, uses cached remote state).
 crystal-bin-installer --no-fetch
+
+# Install symlinks instead of copies, so any later `shards build`
+# inside a project is immediately reflected in `~/bin`.
+crystal-bin-installer --link
 ----
 
 == Options
@@ -100,6 +104,14 @@ crystal-bin-installer --no-fetch
 
 | `--force`
 | Skip git sync checks entirely.
+
+| `-l`, `--link`
+| Install each binary as a symlink to `bin/<target>` instead of a copy.
+  Convenient in development: any subsequent `shards build` inside a
+  project shows up in `~/bin` without re-running the installer.
+
+| `--no-link`
+| Force the copy mode (overrides `link: true` from the config file).
 
 | `-v`, `--version`
 | Print the version and exit.
@@ -147,6 +159,7 @@ Supported keys:
 | `release` | Boolean — compile in release mode (default: `true`).
 | `fetch` | Boolean — run `git fetch` before sync check (default: `true`).
 | `force` | Boolean — skip git sync checks (default: `false`).
+| `link` | Boolean — install binaries as symlinks instead of copies (default: `false`).
 | `skip` | List of strings — projects to exclude.
 |===
 

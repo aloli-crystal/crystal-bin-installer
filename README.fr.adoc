@@ -70,6 +70,10 @@ crystal-bin-installer --force
 
 # Ne pas récupérer les références distantes (plus rapide mais état potentiellement obsolète).
 crystal-bin-installer --no-fetch
+
+# Installer des liens symboliques au lieu de copies, pour qu'un futur
+# `shards build` dans un projet soit immédiatement reflété dans ~/bin.
+crystal-bin-installer --link
 ----
 
 == Options
@@ -104,6 +108,15 @@ crystal-bin-installer --no-fetch
 
 | `--force`
 | Ignore entièrement les vérifications git.
+
+| `-l`, `--link`
+| Installe chaque binaire comme un lien symbolique vers `bin/<cible>`
+  au lieu d'une copie. Pratique en développement : tout `shards build`
+  ultérieur dans un projet est immédiatement reflété dans `~/bin`,
+  sans avoir à relancer l'installeur.
+
+| `--no-link`
+| Force le mode copie (surcharge `link: true` du fichier de configuration).
 
 | `-v`, `--version`
 | Affiche la version et quitte.
@@ -154,6 +167,7 @@ Clés supportées :
 | `release` | Booléen — compiler en mode release (par défaut : `true`).
 | `fetch` | Booléen — exécuter `git fetch` avant la vérification (par défaut : `true`).
 | `force` | Booléen — ignorer les vérifications git (par défaut : `false`).
+| `link` | Booléen — installer les binaires comme liens symboliques au lieu de copies (par défaut : `false`).
 | `skip` | Liste de chaînes — projets à exclure.
 |===
 

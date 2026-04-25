@@ -35,6 +35,7 @@ skip = config.skip.dup
 dry_run = false
 fetch = config.fetch.nil? ? true : config.fetch.not_nil!
 force = config.force.nil? ? false : config.force.not_nil!
+link = config.link.nil? ? false : config.link.not_nil!
 
 parser = OptionParser.parse do |p|
   p.banner = <<-BANNER
@@ -46,7 +47,7 @@ parser = OptionParser.parse do |p|
 
     A per-user config file is read by default from
     `~/.crystal-bin-installer.yml` (see README). Keys supported: `dir`,
-    `dest`, `release`, `fetch`, `force`, `skip` (list).
+    `dest`, `release`, `fetch`, `force`, `link`, `skip` (list).
 
     Options:
     BANNER
@@ -61,6 +62,8 @@ parser = OptionParser.parse do |p|
   p.on("--dry-run", "Report what would be done without touching the disk") { dry_run = true }
   p.on("--no-fetch", "Do not run `git fetch` before the sync check") { fetch = false }
   p.on("--force", "Skip git sync checks (build even if the repo is dirty)") { force = true }
+  p.on("-l", "--link", "Install each binary as a symlink to bin/<target> instead of a copy") { link = true }
+  p.on("--no-link", "Force the copy mode (overrides --link from the config file)") { link = false }
   p.on("-v", "--version", "Print the installer version and exit") do
     puts CrystalBinInstaller::VERSION
     exit 0
@@ -85,6 +88,7 @@ installer = CrystalBinInstaller::Installer.new(
   dry_run: dry_run,
   fetch: fetch,
   force: force,
+  link: link,
 )
 
 results = installer.run
