@@ -3,21 +3,31 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.5 — 2026-04-29
+
+=== Modifié
+
+* **Module interne renommé** `CrystalBinInstaller` → `BinInstaller`
+  (convention Aloli : retrait du préfixe `Crystal` sur les modules
+  internes pour s'aligner sur le nouveau nom du shard). Seul le nom
+  du module change ; comportement, surface CLI et chemin `require`
+  inchangés.
+
 == v0.1.4 — 2026-04-29
 
 === Modifié
 
-* **Repo GitHub renommé** `aloli-crystal/crystal-bin-installer` →
+* **Repo GitHub renommé** `aloli-crystal/bin-installer` →
   `aloli-crystal/bin-installer` (convention de nommage Aloli : les
   créations originales abandonnent le préfixe `crystal-`). Les anciens
   liens redirigent automatiquement.
-* Champ `name:` du `shard.yml` mis à jour de `crystal-bin-installer`
+* Champ `name:` du `shard.yml` mis à jour de `bin-installer`
   à `bin-installer`.
 * Cible de compilation et binaire CLI renommés
-  `crystal-bin-installer` → `bin-installer`
+  `bin-installer` → `bin-installer`
   (`shards build bin-installer` → `bin/bin-installer`).
 * Nouveau fichier d'entrée shim `src/bin-installer.cr` (charge
-  `src/crystal_bin_installer.cr`) ; `require "crystal-bin-installer"`
+  `src/crystal_bin_installer.cr`) ; `require "bin-installer"`
   devient `require "bin-installer"`.
 
 == v0.1.3 — 2026-04-25
@@ -52,7 +62,7 @@ utilisez aussi quotidiennement.
 == v0.1.2 — 2026-04-22
 
 * Ajout d'un fichier de configuration persistant au niveau utilisateur,
-  chargé par défaut depuis `~/.crystal-bin-installer.yml`. Clés
+  chargé par défaut depuis `~/.bin-installer.yml`. Clés
   supportées : `dir`, `dest`, `release`, `fetch`, `force`, `skip`
   (liste). Le chemin peut être surchargé avec `--config CHEMIN`.
 * Ordre de précédence désormais : valeurs par défaut < fichier de
@@ -67,7 +77,7 @@ utilisez aussi quotidiennement.
 * Quand un projet déclare une seule cible, le binaire installé prend
   désormais le nom du projet (répertoire) plutôt que celui de la cible.
   Cela évite que des noms de cibles génériques polluent `~/bin` et
-  masquent d'autres outils sur le `$PATH` (par exemple `crystal-deploy`
+  masquent d'autres outils sur le `$PATH` (par exemple `deploy`
   s'installait auparavant sous le nom `deploy`).
 * Les projets avec plusieurs cibles conservent le comportement
   précédent : chaque binaire est installé sous son propre nom de cible.

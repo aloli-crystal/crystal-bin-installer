@@ -14,7 +14,7 @@ private def with_shard(content : String, &)
   end
 end
 
-describe CrystalBinInstaller::Installer do
+describe BinInstaller::Installer do
   describe "#extract_targets" do
     it "returns target names when `targets:` is present" do
       yaml = <<-YAML
@@ -28,7 +28,7 @@ describe CrystalBinInstaller::Installer do
         YAML
 
       with_shard(yaml) do |shard, _|
-        installer = CrystalBinInstaller::Installer.new("/tmp", "/tmp")
+        installer = BinInstaller::Installer.new("/tmp", "/tmp")
         installer.extract_targets(shard).should eq(%w[demo helper])
       end
     end
@@ -40,14 +40,14 @@ describe CrystalBinInstaller::Installer do
         YAML
 
       with_shard(yaml) do |shard, _|
-        installer = CrystalBinInstaller::Installer.new("/tmp", "/tmp")
+        installer = BinInstaller::Installer.new("/tmp", "/tmp")
         installer.extract_targets(shard).should be_empty
       end
     end
 
     it "returns an empty array on malformed YAML" do
       with_shard("not: valid: yaml: here:", &->(shard : String, _ignore : String) {
-        installer = CrystalBinInstaller::Installer.new("/tmp", "/tmp")
+        installer = BinInstaller::Installer.new("/tmp", "/tmp")
         installer.extract_targets(shard).should be_empty
       })
     end
@@ -58,7 +58,7 @@ describe CrystalBinInstaller::Installer do
       tmp = File.tempname("cbi-nonrepo")
       Dir.mkdir_p(tmp)
       begin
-        installer = CrystalBinInstaller::Installer.new("/tmp", "/tmp", fetch: false)
+        installer = BinInstaller::Installer.new("/tmp", "/tmp", fetch: false)
         installer.git_sync_issue(tmp).should eq("pas un dépôt git")
       ensure
         FileUtils.rm_rf(tmp)
@@ -67,10 +67,10 @@ describe CrystalBinInstaller::Installer do
   end
 end
 
-describe CrystalBinInstaller::Config do
+describe BinInstaller::Config do
   describe ".load" do
     it "returns an empty config when the file does not exist" do
-      config = CrystalBinInstaller::Config.load("/nonexistent/path.yml")
+      config = BinInstaller::Config.load("/nonexistent/path.yml")
       config.dir.should be_nil
       config.dest.should be_nil
       config.release.should be_nil
@@ -93,7 +93,7 @@ describe CrystalBinInstaller::Config do
       tmp = File.tempname("cbi-config", ".yml")
       File.write(tmp, yaml)
       begin
-        config = CrystalBinInstaller::Config.load(tmp)
+        config = BinInstaller::Config.load(tmp)
         config.dir.should eq("/tmp/src")
         config.dest.should eq("/tmp/bin")
         config.release.should eq(false)
@@ -111,7 +111,7 @@ describe CrystalBinInstaller::Config do
       tmp = File.tempname("cbi-config-nolink", ".yml")
       File.write(tmp, yaml)
       begin
-        config = CrystalBinInstaller::Config.load(tmp)
+        config = BinInstaller::Config.load(tmp)
         config.link.should be_nil
       ensure
         File.delete(tmp) if File.exists?(tmp)
@@ -122,7 +122,7 @@ describe CrystalBinInstaller::Config do
       tmp = File.tempname("cbi-config-bad", ".yml")
       File.write(tmp, "not: valid: yaml: at: all:")
       begin
-        config = CrystalBinInstaller::Config.load(tmp)
+        config = BinInstaller::Config.load(tmp)
         config.skip.should be_empty
       ensure
         File.delete(tmp) if File.exists?(tmp)
@@ -148,7 +148,7 @@ describe "Installer · link mode" do
     dest_file = File.join(dst_root, "fake-bin")
 
     begin
-      installer = CrystalBinInstaller::Installer.new(
+      installer = BinInstaller::Installer.new(
         source_dir: src_root,
         dest_dir: dst_root,
         link: true,
@@ -184,7 +184,7 @@ describe "Installer · link mode" do
     dest_file = File.join(dst_root, "fake-bin")
 
     begin
-      installer = CrystalBinInstaller::Installer.new(
+      installer = BinInstaller::Installer.new(
         source_dir: src_root,
         dest_dir: dst_root,
         link: false,
@@ -217,7 +217,7 @@ describe "Installer · link mode" do
     File.write(dest_file, "v1")
 
     begin
-      installer = CrystalBinInstaller::Installer.new(
+      installer = BinInstaller::Installer.new(
         source_dir: src_root,
         dest_dir: dst_root,
         link: true,

@@ -3,19 +3,28 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.5 — 2026-04-29
+
+=== Changed
+
+* **Internal module renamed** `CrystalBinInstaller` → `BinInstaller`
+  (Aloli convention: drop the `Crystal` prefix on internal modules to
+  match the new shard name). Only the module name changes; behaviour,
+  CLI surface and `require` path are unchanged.
+
 == v0.1.4 — 2026-04-29
 
 === Changed
 
-* **GitHub repository renamed** from `aloli-crystal/crystal-bin-installer`
+* **GitHub repository renamed** from `aloli-crystal/bin-installer`
   to `aloli-crystal/bin-installer` (Aloli naming convention: original
   creations drop the `crystal-` prefix). Old links redirect automatically.
-* `name:` field in `shard.yml` updated from `crystal-bin-installer` to
+* `name:` field in `shard.yml` updated from `bin-installer` to
   `bin-installer`.
-* Build target / CLI binary renamed `crystal-bin-installer` →
+* Build target / CLI binary renamed `bin-installer` →
   `bin-installer` (`shards build bin-installer` → `bin/bin-installer`).
 * New entry-point shim `src/bin-installer.cr` (loads
-  `src/crystal_bin_installer.cr`); `require "crystal-bin-installer"` →
+  `src/crystal_bin_installer.cr`); `require "bin-installer"` →
   `require "bin-installer"`.
 
 == v0.1.3 — 2026-04-25
@@ -45,7 +54,7 @@ immediately reflected in `~/bin` without re-running the installer
 == v0.1.2 — 2026-04-22
 
 * Add a persistent per-user config file, loaded by default from
-  `~/.crystal-bin-installer.yml`. Supported keys: `dir`, `dest`,
+  `~/.bin-installer.yml`. Supported keys: `dir`, `dest`,
   `release`, `fetch`, `force`, `skip` (list). The path can be
   overridden with `--config PATH`.
 * Precedence is now: built-in defaults < config file < CLI flags.
@@ -59,7 +68,7 @@ immediately reflected in `~/bin` without re-running the installer
 * When a project declares exactly one target, the installed binary now
   takes the project (directory) name instead of the target name. This
   avoids generic target names leaking into `~/bin` and shadowing other
-  tools on `$PATH` (e.g. `crystal-deploy` used to install as `deploy`).
+  tools on `$PATH` (e.g. `deploy` used to install as `deploy`).
 * Projects with multiple targets keep the previous behaviour: each
   binary is installed under its own target name.
 

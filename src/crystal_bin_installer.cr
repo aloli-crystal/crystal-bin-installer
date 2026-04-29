@@ -5,12 +5,12 @@ require "colorize"
 # Walks a source directory of Crystal shards, checks their git sync state
 # against `origin/production`, compiles every declared target, and copies
 # the resulting binaries into a destination directory (default `~/bin`).
-module CrystalBinInstaller
+module BinInstaller
   VERSION = "0.1.3"
 
   # Default path of the user-level config file (loaded automatically by
   # the CLI unless `--config` is passed).
-  DEFAULT_CONFIG_PATH = File.join(Path.home.to_s, ".crystal-bin-installer.yml")
+  DEFAULT_CONFIG_PATH = File.join(Path.home.to_s, ".bin-installer.yml")
 
   # Persistent per-user defaults read from a YAML file. Fields are
   # optional: unset entries fall back to the built-in defaults, and CLI
@@ -135,7 +135,7 @@ module CrystalBinInstaller
         # When a project declares exactly one target, install the binary
         # under the project (directory) name rather than the target name.
         # This avoids generic names leaking into `~/bin` (e.g. a project
-        # `crystal-deploy` whose target is `deploy` would otherwise install
+        # `deploy` whose target is `deploy` would otherwise install
         # as `deploy`, shadowing other tools on `$PATH`).
         targets.each do |target|
           installed_name = targets.size == 1 ? name : target

@@ -151,9 +151,9 @@ force: false
 skip:
   - beryl
   - crystal-asciidoctor
-  - crystal-silex
-  - crystal-load-env
-  - crystal-i18n
+  - silex
+  - load-env
+  - i18n
 ----
 
 Clés supportées :

@@ -5,7 +5,7 @@ require "./crystal_bin_installer"
 # Defaults < config file < CLI flags.
 #
 # 1. Start from the built-in defaults below.
-# 2. Load the per-user config file (default path: `~/.crystal-bin-installer.yml`,
+# 2. Load the per-user config file (default path: `~/.bin-installer.yml`,
 #    overridable via `--config PATH`). Values set in the file override
 #    the defaults.
 # 3. Finally apply CLI flags. For scalar options (dir, dest, release,
@@ -13,7 +13,7 @@ require "./crystal_bin_installer"
 #    the config file and the CLI flag union their project lists.
 # ---------------------------------------------------------------------------
 
-config_path = CrystalBinInstaller::DEFAULT_CONFIG_PATH
+config_path = BinInstaller::DEFAULT_CONFIG_PATH
 
 # First pass: extract --config early so the file can be loaded before the
 # main pass applies CLI overrides in the correct order.
@@ -26,7 +26,7 @@ ARGV.each_with_index do |arg, idx|
   end
 end
 
-config = CrystalBinInstaller::Config.load(config_path)
+config = BinInstaller::Config.load(config_path)
 
 source_dir = config.dir || File.join(Path.home.to_s, "prod-crystal")
 dest_dir = config.dest || File.join(Path.home.to_s, "bin")
@@ -39,20 +39,20 @@ link = config.link.nil? ? false : config.link.not_nil!
 
 parser = OptionParser.parse do |p|
   p.banner = <<-BANNER
-    Usage: crystal-bin-installer [options]
+    Usage: bin-installer [options]
 
     Walks the source directory, compiles each Crystal project whose
     `shard.yml` declares a `targets:` section, and installs the resulting
     binaries into the destination directory.
 
     A per-user config file is read by default from
-    `~/.crystal-bin-installer.yml` (see README). Keys supported: `dir`,
+    `~/.bin-installer.yml` (see README). Keys supported: `dir`,
     `dest`, `release`, `fetch`, `force`, `link`, `skip` (list).
 
     Options:
     BANNER
 
-  p.on("--config PATH", "Path to the user config file (default: ~/.crystal-bin-installer.yml)") { |v| config_path = v }
+  p.on("--config PATH", "Path to the user config file (default: ~/.bin-installer.yml)") { |v| config_path = v }
   p.on("--dir PATH", "Source directory (default: ~/prod-crystal)") { |v| source_dir = v }
   p.on("--dest PATH", "Destination directory (default: ~/bin)") { |v| dest_dir = v }
   p.on("--dev", "Compile in development mode (faster, not optimised)") { release = false }
@@ -65,7 +65,7 @@ parser = OptionParser.parse do |p|
   p.on("-l", "--link", "Install each binary as a symlink to bin/<target> instead of a copy") { link = true }
   p.on("--no-link", "Force the copy mode (overrides --link from the config file)") { link = false }
   p.on("-v", "--version", "Print the installer version and exit") do
-    puts CrystalBinInstaller::VERSION
+    puts BinInstaller::VERSION
     exit 0
   end
   p.on("-h", "--help", "Show this help and exit") do
@@ -80,7 +80,7 @@ parser = OptionParser.parse do |p|
   end
 end
 
-installer = CrystalBinInstaller::Installer.new(
+installer = BinInstaller::Installer.new(
   source_dir: source_dir,
   dest_dir: dest_dir,
   release: release,
@@ -92,7 +92,7 @@ installer = CrystalBinInstaller::Installer.new(
 )
 
 results = installer.run
-CrystalBinInstaller.print_summary(results)
+BinInstaller.print_summary(results)
 
 # Exit non-zero if any build failed.
 exit 1 if results.any?(&.status.failed?)
