@@ -1,17 +1,17 @@
-= crystal-bin-installer
+= bin-installer
 :source-language: crystal
 :toc: left
 :toc-title: Table of contents
 :toclevels: 2
 
-image:https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml/badge.svg[CI,link=https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml]
+image:https://github.com/aloli-crystal/bin-installer/actions/workflows/ci.yml/badge.svg[CI,link=https://github.com/aloli-crystal/bin-installer/actions/workflows/ci.yml]
 
 French version: link:README.fr.adoc[README.fr.adoc]
 
 One-command build and install for the whole Crystal shard ecosystem in a
 local directory.
 
-`crystal-bin-installer` walks a source directory, finds every Crystal
+`bin-installer` walks a source directory, finds every Crystal
 project that declares a `targets:` section in its `shard.yml`, verifies
 that it is synchronised with `origin/production`, compiles it, and
 copies the produced binary into a destination directory (by default
@@ -44,10 +44,10 @@ does not reflect what is on GitHub.
 
 [source,shell]
 ----
-git clone git@github.com:aloli-crystal/crystal-bin-installer.git
-cd crystal-bin-installer
+git clone git@github.com:aloli-crystal/bin-installer.git
+cd bin-installer
 shards build --release
-cp bin/crystal-bin-installer ~/bin/
+cp bin/bin-installer ~/bin/
 ----
 
 == Usage
@@ -55,23 +55,23 @@ cp bin/crystal-bin-installer ~/bin/
 [source,shell]
 ----
 # Default: walk ~/prod-crystal, install into ~/bin, release build, fetch enabled.
-crystal-bin-installer
+bin-installer
 
 # Dry run from a custom directory.
-crystal-bin-installer --dir ~/work/crystal --dry-run
+bin-installer --dir ~/work/crystal --dry-run
 
 # Skip two projects and compile in dev mode.
-crystal-bin-installer --dev --skip crystal-asciidoctor,crystal-experimental
+bin-installer --dev --skip crystal-asciidoctor,crystal-experimental
 
 # Bypass git checks (builds dirty repos too).
-crystal-bin-installer --force
+bin-installer --force
 
 # Do not fetch from the remote (faster, uses cached remote state).
-crystal-bin-installer --no-fetch
+bin-installer --no-fetch
 
 # Install symlinks instead of copies, so any later `shards build`
 # inside a project is immediately reflected in `~/bin`.
-crystal-bin-installer --link
+bin-installer --link
 ----
 
 == Options
@@ -81,7 +81,7 @@ crystal-bin-installer --link
 | Option | Description
 
 | `--config PATH`
-| Path to the user config file (default: `~/.crystal-bin-installer.yml`).
+| Path to the user config file (default: `~/.bin-installer.yml`).
 
 | `--dir PATH`
 | Source directory to walk (default: `~/prod-crystal`).
@@ -123,14 +123,14 @@ crystal-bin-installer --link
 == Config file
 
 A per-user config file is automatically loaded from
-`~/.crystal-bin-installer.yml` if it exists, so you don't have to pass
+`~/.bin-installer.yml` if it exists, so you don't have to pass
 the same flags every time. Override the path with `--config PATH`.
 
 Precedence (lowest to highest): **built-in defaults → config file → CLI
 flags**. `--skip` is the only additive option: the list from the config
 file and the list from the CLI are merged.
 
-.Example `~/.crystal-bin-installer.yml`
+.Example `~/.bin-installer.yml`
 [source,yaml]
 ----
 # Override the defaults: use a custom source directory, compile in dev
@@ -141,7 +141,7 @@ release: true
 fetch: true
 force: false
 skip:
-  - crystal-beryl
+  - beryl
   - crystal-asciidoctor
   - crystal-silex
   - crystal-load-env

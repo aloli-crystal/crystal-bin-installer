@@ -1,17 +1,17 @@
-= crystal-bin-installer
+= bin-installer
 :source-language: crystal
 :toc: left
 :toc-title: Table des matières
 :toclevels: 2
 
-image:https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml/badge.svg[CI,link=https://github.com/aloli-crystal/crystal-bin-installer/actions/workflows/ci.yml]
+image:https://github.com/aloli-crystal/bin-installer/actions/workflows/ci.yml/badge.svg[CI,link=https://github.com/aloli-crystal/bin-installer/actions/workflows/ci.yml]
 
 English version: link:README.adoc[README.adoc]
 
 Compilation et installation en une commande de tout un écosystème de
 shards Crystal d'un dossier local.
 
-`crystal-bin-installer` parcourt un répertoire source, détecte chaque
+`bin-installer` parcourt un répertoire source, détecte chaque
 projet Crystal déclarant une section `targets:` dans son `shard.yml`,
 vérifie qu'il est bien synchronisé avec `origin/production`, le compile
 et copie le binaire produit dans un répertoire de destination (par
@@ -46,10 +46,10 @@ GitHub.
 
 [source,shell]
 ----
-git clone git@github.com:aloli-crystal/crystal-bin-installer.git
-cd crystal-bin-installer
+git clone git@github.com:aloli-crystal/bin-installer.git
+cd bin-installer
 shards build --release
-cp bin/crystal-bin-installer ~/bin/
+cp bin/bin-installer ~/bin/
 ----
 
 == Utilisation
@@ -57,23 +57,23 @@ cp bin/crystal-bin-installer ~/bin/
 [source,shell]
 ----
 # Par défaut : parcourt ~/prod-crystal, installe dans ~/bin, mode release, fetch activé.
-crystal-bin-installer
+bin-installer
 
 # Simulation à partir d'un autre dossier.
-crystal-bin-installer --dir ~/work/crystal --dry-run
+bin-installer --dir ~/work/crystal --dry-run
 
 # Exclure deux projets et compiler en mode dev.
-crystal-bin-installer --dev --skip crystal-asciidoctor,crystal-experimental
+bin-installer --dev --skip crystal-asciidoctor,crystal-experimental
 
 # Ignorer les vérifications git (compile même les dépôts sales).
-crystal-bin-installer --force
+bin-installer --force
 
 # Ne pas récupérer les références distantes (plus rapide mais état potentiellement obsolète).
-crystal-bin-installer --no-fetch
+bin-installer --no-fetch
 
 # Installer des liens symboliques au lieu de copies, pour qu'un futur
 # `shards build` dans un projet soit immédiatement reflété dans ~/bin.
-crystal-bin-installer --link
+bin-installer --link
 ----
 
 == Options
@@ -84,7 +84,7 @@ crystal-bin-installer --link
 
 | `--config CHEMIN`
 | Chemin du fichier de configuration utilisateur (par défaut :
-  `~/.crystal-bin-installer.yml`).
+  `~/.bin-installer.yml`).
 
 | `--dir CHEMIN`
 | Répertoire source à parcourir (par défaut : `~/prod-crystal`).
@@ -128,7 +128,7 @@ crystal-bin-installer --link
 == Fichier de configuration
 
 Un fichier de configuration utilisateur est automatiquement chargé
-depuis `~/.crystal-bin-installer.yml` s'il existe, pour éviter de
+depuis `~/.bin-installer.yml` s'il existe, pour éviter de
 passer les mêmes options à chaque lancement. Le chemin peut être
 surchargé avec `--config CHEMIN`.
 
@@ -137,7 +137,7 @@ défaut → fichier de configuration → options en ligne de commande**.
 `--skip` est la seule option additive : la liste du fichier de
 configuration et celle du CLI sont fusionnées.
 
-.Exemple `~/.crystal-bin-installer.yml`
+.Exemple `~/.bin-installer.yml`
 [source,yaml]
 ----
 # Surcharge des valeurs par défaut : répertoire source personnalisé,
@@ -149,7 +149,7 @@ release: true
 fetch: true
 force: false
 skip:
-  - crystal-beryl
+  - beryl
   - crystal-asciidoctor
   - crystal-silex
   - crystal-load-env

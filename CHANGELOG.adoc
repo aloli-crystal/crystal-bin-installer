@@ -3,6 +3,21 @@
 :toc-title: Versions
 :toclevels: 2
 
+== v0.1.4 — 2026-04-29
+
+=== Changed
+
+* **GitHub repository renamed** from `aloli-crystal/crystal-bin-installer`
+  to `aloli-crystal/bin-installer` (Aloli naming convention: original
+  creations drop the `crystal-` prefix). Old links redirect automatically.
+* `name:` field in `shard.yml` updated from `crystal-bin-installer` to
+  `bin-installer`.
+* Build target / CLI binary renamed `crystal-bin-installer` →
+  `bin-installer` (`shards build bin-installer` → `bin/bin-installer`).
+* New entry-point shim `src/bin-installer.cr` (loads
+  `src/crystal_bin_installer.cr`); `require "crystal-bin-installer"` →
+  `require "bin-installer"`.
+
 == v0.1.3 — 2026-04-25
 
 Symlink install mode. New `-l` / `--link` CLI flag (and matching
