@@ -6,7 +6,15 @@ require "colorize"
 # against `origin/production`, compiles every declared target, and copies
 # the resulting binaries into a destination directory (default `~/bin`).
 module BinInstaller
-  VERSION = "0.1.3"
+  # Lue au compile-time depuis `shard.yml` via le macro `read_file`.
+  # Cf. note mémoire `feedback_shard_version_macro.md` (mémoire ALOLI).
+  VERSION = {{
+              (read_file("#{__DIR__}/../shard.yml")
+                .lines
+                .find(&.starts_with?("version:")) || "version: 0.0.0")
+                .gsub(/^version:\s*/, "")
+                .chomp
+            }}
 
   # Default path of the user-level config file (loaded automatically by
   # the CLI unless `--config` is passed).
